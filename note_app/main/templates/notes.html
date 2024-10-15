@@ -1,0 +1,8 @@
+{% extends "base.html" %} {% block content %}
+<a href="/new_note">Add new note</a>
+<h1>Notes</h1>
+{% for note in notes %}
+<a href="{% url 'detail' note.id %}">{{ note.title }}</a>
+<p>{{ note.content }}</p>
+<p>Added by: {{ note.author }}, {{ note.date }}</p>
+{% endfor %} {% endblock %}

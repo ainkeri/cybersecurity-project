@@ -1,0 +1,11 @@
+{% extends "base.html" %} {% block content %}
+<!-- remove |safe from lines 3 and 4 to prevent XSS-injection-->
+<h2>{{ note.title|safe }}</h2>
+<p>{{ note.content|safe }}</p>
+<p>Added by: {{ note.author }}, {{ note.date }}</p>
+{% if user == note.author %}
+<form action="{% url 'delete' note.id %}" method="POST">
+  {% csrf_token %}
+  <input type="submit" value="Delete note" />
+</form>
+{% endif %} {% endblock %}
