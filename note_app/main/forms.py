@@ -18,4 +18,8 @@ class CreateUserForm(UserCreationForm):
 
 class LoginForm(AuthenticationForm):
     username = forms.CharField(widget=TextInput())
-    password = forms.CharField(widget=PasswordInput())
+    ## Vulnerability:
+    ## Password is exposed as in plaintext within HTML.
+    ## How to fix:
+    ## Replace TextInput() to PasswordInput()
+    password = forms.CharField(widget=TextInput())
