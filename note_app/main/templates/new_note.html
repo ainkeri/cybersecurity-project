@@ -1,8 +1,7 @@
 {% extends "base.html" %} {% block content %}
 <h1>New note</h1>
 <form method="POST" action="{% url 'new_note' %}">
-  <!-- no {% csrf_token %} here, add it to fix the vulnerability-->
-  {{ form }}
+  {% csrf_token %} {{ form }}
   <input type="submit" value="Add note" />
 </form>
 {% endblock %}
