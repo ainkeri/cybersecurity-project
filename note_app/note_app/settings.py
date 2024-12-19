@@ -45,9 +45,27 @@ MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
 
+
     ## Vulnerability:
-    ## CSRF protection middleware is disabled, leading to app not checking for CSRF.
+    ## A new note can be added without CSRF protection.
+    ## 1. First, create a user in the application.
+    ## 2. Log in via terminal:
+    ##curl -X POST http://127.0.0.1:8000/login \    
+    ##    -d "username=<username>" \
+    ##    -d "password=<password>" \
+    ##    -c cookies.txt
+
+    ## 3. Add a new note:
+    ## curl -X POST http://127.0.0.1:8000/new_note/ \
+    ##    -d "title=<title>" \
+    ##    -d "content=<content>" \
+    ##    -b cookies.txt
+
+    ## (The cookies.txt is because without session cookie, Django would see the request coming from
+    ## unauthenticated user)
+
     ## How to fix:
+    ## CSRF protection middleware is disabled, leading to app not checking for CSRF.
     ## Uncomment following line:
 
     # 'django.middleware.csrf.CsrfViewMiddleware',

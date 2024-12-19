@@ -22,25 +22,14 @@ def notes(request):
     items = Note.objects.all()
     return render(request, "notes.html", {"notes": items})
 
-## Vulnerability:
-## With no one logged in, anyone can add a new note without CSRF protection for ex. using:
-## curl -X POST http://127.0.0.1:8000/new_note/ \
-##     -d 'title=Attack&content=This is a malicous note.'
-## Note will be added by fake admin.
-## How to fix:
-## Add @login_required(login_url="login") to ensure user is logged in.
-## Remove if, else statements from lines 40-43, and replace with single line:
-##      newnote.author = request.user
+@login_required
 def new_note(request):
     form = CreateNote()
     if request.method == "POST":
         form = CreateNote(request.POST)
         if form.is_valid():
             newnote = form.save(commit=False)
-            if request.user.is_authenticated:
-                newnote.author = request.user
-            else:
-                newnote.author = User.objects.get(id=1)
+            newnote.author = request.user
             newnote.save()
             return redirect("notes")
 
@@ -53,15 +42,17 @@ def detail(request, note_id):
     return render(request, 'detail.html', {"note": note})
 
 ## Vulnerability:
-## Any user can delete notes by just accessing url /notes/<note_id>/delete
+## Any user can delete notes by just accessing url /notes/<note_id>/delete or faking a POST
 ## even though the user who added the note should be the only one able to do this
 ## How to fix:
 ## fix by replacing delete function with following code:
-    ##note = get_object_or_404(Note, pk=note_id)
-    ##if request.method == "POST":
-        ##note.delete()
-        ##return redirect("notes")
-    ##return render(request, 'detail.html', {"note": note})
+    ## note = get_object_or_404(Note, pk=note_id)
+    ## if note.author != request.user:
+    ##    return redirect("notes")
+    ## if request.method == "POST":
+    ##    note.delete()
+    ##    return redirect("notes")
+    ## return render(request, 'detail.html', {"note": note})
 @login_required(login_url="login")
 def delete(request, note_id):
     note = get_object_or_404(Note, pk=note_id)
