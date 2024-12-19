@@ -86,10 +86,6 @@ def login(request):
 
     return render(request, "login.html", {"form": form})
 
-## Vulnerability:
-## Page can be accessed without logging in
-## How to fix:
-## add decorator @login_required(login_url="login") to fix access control
 def logout(request):
     auth.logout(request)
 
